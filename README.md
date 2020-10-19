@@ -15,6 +15,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### `node server.js`
 
-Launches express server on http://localhost:8080
+Launches express server on http://localhost:8080.<br />
 Serves api to fetch search suggestions (financial suggestions)
 
