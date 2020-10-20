@@ -12,26 +12,21 @@ class Home extends React.Component {
     triggerSearch = (searchBoxQuery) => {
         // Sanitize input
         // TODO: add validations to cover security risks
-        let query = searchBoxQuery.trim().toLowerCase();
+        let query = searchBoxQuery.trim();
         if(!query || query.length === 0){
           // Clear out results
           this.setState(state => ({
             searchResults: []
           }));
           return;
-        }
-        fetch('/api/getInstitutions')
-            .then(response => response.json())
-            .then(results => {
-                // Filter out results based on search query
-                // Supports search on institution name or type
-                const newResults = results.filter((item) => {
-                    return item.name.toLowerCase().includes(query) || item.type.toLowerCase().includes(query);
-                });
-                // Update state
-                this.setState(state => ({
-                    searchResults: newResults
-                }));
+        };
+        fetch(`/api/getProducts?search=${query}`)
+          .then(response => response.json())
+          .then(results => {
+              // Update state
+              this.setState(state => ({
+                  searchResults: results
+              }));
          })
          .catch(error => {
            // log error

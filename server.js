@@ -1,39 +1,35 @@
 const express = require('express')
-const path = require('path')
+const fs = require('fs');
 const app = express(),
       bodyParser = require("body-parser"),
       port = 8080;
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'build')))
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 
-const db = {
-    "products": [
-        {
-            "name": "American Express Cards (US)",
-            "url": "https://www.americanexpress.com",
-            "type": "CREDIT_CARD"
-        },
-        {
-            "name": "ADP Retirement Services - 401k (US)",
-            "url": "http://www.adp.com/solutions/employer-services/retirement-services.aspx",
-            "type": "INVESTMENT"
-        },
-        {
-            "name": "American Express Bank (Personal Savings) (US)",
-            "url": "https://www.americanexpress.com/?inav=NavLogo",
-            "type": "BANK"
-        }
-    ]
-};
+var router = express.Router();
 
-app.get('/api/getInstitutions', (req, res) => {
-    res.json(db.products);
-  });
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'))
+// logging middleware
+router.use(function(req, res, next) {
+    console.log('\nReceived:',{url: req.originalUrl, body: req.body, query: req.query});
+    next();
 })
 
-app.listen(port, () => {
-    console.log(`Server listening on the port::${port}`);
-});
+const filterProducts = (term) => {
+    // Read from db
+    let data = JSON.parse(fs.readFileSync('products.json'));
+    // Basic logic to filter products based on name
+    let newResults = data.products.filter((item) => {
+        return item.name.toLowerCase().includes(term);
+    });
+    // Return top 10 results
+    return newResults.slice(0, 10);
+  }
+
+router.get('/getProducts', function(req, res) {
+    let results = filterProducts(req.query.search.toLowerCase());
+    res.json(results);
+})
+
+app.use('/api', router);
+app.listen(port);
+console.log(`API running at localhost:${port}/api`);

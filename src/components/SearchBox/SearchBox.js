@@ -36,7 +36,7 @@ const SearchBox = (props) => {
         <div className="search-results">
           { suggestions.map((item, index) => 
             <div key={index} className="item" onClick={() => setSearchQuery(item.name)}>
-              <span className="title">{item.name}</span>
+              <span className="title ellipsis" title={item.name}>{item.name}</span>
               <span className="label">{item.type}</span>
             </div> 
           )}
